@@ -5,14 +5,62 @@ import Link from "next/link";
 import Image from "next/image";
 import EventCard from "@/components/events/event-card";
 import { prisma } from "@/lib/db";
+import { fetchStrapi } from "@/lib/strapi";
+
+async function getFeaturedEvents() {
+  // 1. Try to fetch from Strapi first
+  try {
+    const qs = new URLSearchParams();
+    qs.set('populate', 'category');
+    qs.set('pagination[page]', '1');
+    qs.set('pagination[pageSize]', '6');
+    qs.set('sort[0]', 'createdAt:desc');
+    qs.set('filters[status][$eq]', 'PUBLISHED');
+    qs.set('filters[featured][$eq]', 'true');
+
+    const strapiRes = await fetchStrapi(`events?${qs.toString()}`);
+    if (strapiRes && strapiRes.data) {
+      return strapiRes.data.map((item: any) => ({
+        id: item.id,
+        documentId: item.documentId,
+        title: item.title,
+        slug: item.slug,
+        description: item.description,
+        date: item.date,
+        time: item.time,
+        venueAddress: item.venueAddress,
+        coordinatesLat: item.coordinatesLat,
+        coordinatesLng: item.coordinatesLng,
+        ticketPrice: item.ticketPrice,
+        featured: item.featured,
+        imageUrl: item.imageUrl,
+        status: item.status,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
+        category: item.category || null,
+        organizer: item.organizer || null,
+      }));
+    }
+  } catch (strapiError) {
+    console.warn('Strapi fetch failed on home page, trying Prisma fallback:', strapiError);
+  }
+
+  // 2. Fallback to Prisma
+  try {
+    return await prisma.event.findMany({
+      where: { featured: true, status: 'PUBLISHED' },
+      include: { category: true },
+      take: 6,
+      orderBy: { createdAt: 'desc' }
+    });
+  } catch (prismaError) {
+    console.error('Prisma query failed on home page, returning empty list:', prismaError);
+    return [];
+  }
+}
 
 export default async function Home() {
-  const featuredEvents = await prisma.event.findMany({
-    where: { featured: true, status: 'PUBLISHED' },
-    include: { category: true },
-    take: 6,
-    orderBy: { createdAt: 'desc' }
-  });
+  const featuredEvents = await getFeaturedEvents();
 
   return (
     <div className="flex flex-col gap-16 md:gap-28 pb-20">
@@ -86,7 +134,7 @@ export default async function Home() {
 
           {featuredEvents.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-              {featuredEvents.map((event) => (
+              {featuredEvents.map((event: any) => (
                 <div key={event.id} className="h-full">
                   <EventCard event={event as any} />
                 </div>

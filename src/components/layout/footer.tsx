@@ -32,19 +32,19 @@ const Footer = () => {
             <h3 className="font-semibold mb-4 text-sm uppercase tracking-wider">Quick Links</h3>
             <ul className="space-y-2">
               <li><Link href="/events" className="text-sm text-muted-foreground hover:text-primary">Find Events</Link></li>
-              <li><Link href="/create" className="text-sm text-muted-foreground hover:text-primary">Create Event</Link></li>
-              <li><Link href="/community" className="text-sm text-muted-foreground hover:text-primary">Community</Link></li>
-              <li><Link href="/blog" className="text-sm text-muted-foreground hover:text-primary">Blog</Link></li>
+              <li><Link href="/dashboard/create-event" className="text-sm text-muted-foreground hover:text-primary">Create Event</Link></li>
+              <li><Link href="/about" className="text-sm text-muted-foreground hover:text-primary">About Us</Link></li>
+              <li><Link href="/contact" className="text-sm text-muted-foreground hover:text-primary">Contact Us</Link></li>
             </ul>
           </div>
           
           <div>
             <h3 className="font-semibold mb-4 text-sm uppercase tracking-wider">Support</h3>
             <ul className="space-y-2">
-              <li><Link href="/help" className="text-sm text-muted-foreground hover:text-primary">Help Center</Link></li>
-              <li><Link href="/safety" className="text-sm text-muted-foreground hover:text-primary">Safety Center</Link></li>
-              <li><Link href="/terms" className="text-sm text-muted-foreground hover:text-primary">Terms of Service</Link></li>
-              <li><Link href="/privacy" className="text-sm text-muted-foreground hover:text-primary">Privacy Policy</Link></li>
+              <li><Link href="/contact" className="text-sm text-muted-foreground hover:text-primary">Help Center</Link></li>
+              <li><Link href="/contact" className="text-sm text-muted-foreground hover:text-primary">Safety Center</Link></li>
+              <li><Link href="#" className="text-sm text-muted-foreground hover:text-primary">Terms of Service</Link></li>
+              <li><Link href="#" className="text-sm text-muted-foreground hover:text-primary">Privacy Policy</Link></li>
             </ul>
           </div>
           
