@@ -1,0 +1,121 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int        @id @default(autoincrement())
+  username  String     @unique
+  email     String     @unique
+  password  String
+  role      String     @default("USER")
+  createdAt DateTime   @default(now())
+  events    Event[]    @relation("UserEvents")
+  favorites Favorite[]
+  reviews   Review[]
+  rsvps     RSVP[]
+
+  @@map("users")
+}
+
+model Event {
+  id             Int        @id @default(autoincrement())
+  title          String
+  slug           String     @unique
+  description    String?
+  date           String
+  time           String
+  venueAddress   String
+  coordinatesLat Float?
+  coordinatesLng Float?
+  ticketPrice    Float      @default(0)
+  featured       Boolean    @default(false)
+  imageUrl       String?
+  status         String     @default("DRAFT")
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  categoryId     Int?
+  organizerId    Int?
+  category       Category?  @relation(fields: [categoryId], references: [id])
+  organizer      User?      @relation("UserEvents", fields: [organizerId], references: [id])
+  favorites      Favorite[]
+  reviews        Review[]
+  rsvps          RSVP[]
+
+  @@index([slug])
+  @@index([status])
+  @@index([featured])
+  @@index([categoryId])
+  @@map("events")
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+  userId    Int
+  eventId   Int
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId])
+  @@index([eventId])
+  @@index([userId])
+  @@map("reviews")
+}
+
+model Category {
+  id     Int     @id @default(autoincrement())
+  name   String  @unique
+  slug   String  @unique
+  color  String  @default("#000000")
+  icon   String?
+  events Event[]
+
+  @@map("categories")
+}
+
+model RSVP {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  userId    Int
+  eventId   Int
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId])
+  @@index([userId])
+  @@index([eventId])
+  @@map("rsvps")
+}
+
+model Favorite {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  userId    Int
+  eventId   Int
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId])
+  @@index([userId])
+  @@index([eventId])
+  @@map("favorites")
+}
+
+model strapi_migrations {
+  id   Int       @id @default(autoincrement())
+  name String?   @db.VarChar(255)
+  time DateTime? @db.Timestamp(6)
+}
+
+model strapi_migrations_internal {
+  id   Int       @id @default(autoincrement())
+  name String?   @db.VarChar(255)
+  time DateTime? @db.Timestamp(6)
+}
