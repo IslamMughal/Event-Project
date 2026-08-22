@@ -8,10 +8,13 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'
 import { User, Mail, Shield, Save, Camera, Loader2 } from 'lucide-react'
 
+import { useRouter } from 'next/navigation'
+
 export default function ProfilePage() {
   const { data: session, update } = useSession()
+  const router = useRouter()
   const [username, setUsername] = useState(session?.user?.name || '')
-  const [avatarUrl, setAvatarUrl] = useState<string>((session?.user as any)?.image || '')
+  const [avatarUrl, setAvatarUrl] = useState<string>((session?.user as any)?.image || session?.user?.image || '')
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [uploadError, setUploadError] = useState('')
@@ -19,10 +22,24 @@ export default function ProfilePage() {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
+    // 1. Set initial from session
     if (session?.user) {
       if (session.user.name) setUsername(session.user.name)
-      if ((session.user as any).image) setAvatarUrl((session.user as any).image)
+      if (session.user.image || (session.user as any).image) {
+        setAvatarUrl((session.user.image || (session.user as any).image) as string)
+      }
     }
+
+    // 2. Fetch fresh profile from database to ensure exact sync
+    fetch('/api/user/profile')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((json) => {
+        if (json?.data) {
+          if (json.data.username) setUsername(json.data.username)
+          if (json.data.image) setAvatarUrl(json.data.image)
+        }
+      })
+      .catch((err) => console.error('Error fetching profile:', err))
   }, [session])
 
   const handleCameraClick = () => {
@@ -97,7 +114,11 @@ export default function ProfilePage() {
       const json = await res.json()
       if (!res.ok) throw new Error(json?.error?.message || 'Save failed')
 
-      await update({ name: json.data.username, image: json.data.image })
+      setUsername(json.data.username)
+      if (json.data.image) setAvatarUrl(json.data.image)
+
+      await update({ name: json.data.username, username: json.data.username, image: json.data.image })
+      router.refresh()
       setSaveMessage('Profile saved successfully!')
       setTimeout(() => setSaveMessage(''), 3000)
     } catch (err: any) {
@@ -215,7 +236,7 @@ export default function ProfilePage() {
               <p className="text-xs text-muted-foreground mb-2">Uploading photo…</p>
             )}
 
-            <h3 className="font-bold text-xl">{session?.user?.name || 'User'}</h3>
+            <h3 className="font-bold text-xl">{username || session?.user?.name || 'User'}</h3>
             <p className="text-sm text-muted-foreground mb-6">Member since 2026</p>
             <div className="flex justify-center gap-4">
               <div className="text-center">

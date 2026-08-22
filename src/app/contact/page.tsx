@@ -16,7 +16,7 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="container max-w-7xl px-4 py-24 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
         <div className="space-y-8">
           <div className="space-y-4">

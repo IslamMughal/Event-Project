@@ -34,15 +34,15 @@ export default function DashboardLayout({
   ]
 
   return (
-    <div className="container py-10">
+    <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
       <div className="flex flex-col md:flex-row gap-8">
         {/* Sidebar */}
         <aside className="w-full md:w-64 space-y-4">
           <div className="p-6 rounded-2xl border bg-card flex flex-col items-center text-center gap-4 shadow-sm">
             <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/5 overflow-hidden">
-              {(session?.user as any)?.image ? (
+              {(session?.user as any)?.image || session?.user?.image ? (
                 <Image
-                  src={(session?.user as any).image}
+                  src={((session?.user as any)?.image || session?.user?.image)!}
                   alt="Profile"
                   width={80}
                   height={80}
@@ -53,7 +53,7 @@ export default function DashboardLayout({
               )}
             </div>
             <div>
-              <h2 className="font-bold text-lg">{session?.user?.name || 'User'}</h2>
+              <h2 className="font-bold text-lg">{session?.user?.name || (session?.user as any)?.username || 'User'}</h2>
               <p className="text-xs text-muted-foreground truncate max-w-[180px]">{session?.user?.email}</p>
             </div>
             <Link href="/dashboard/profile" className="w-full">

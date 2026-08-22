@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Calendar, Mail, Lock, User, AlertCircle, CheckCircle2 } from 'lucide-react'
+import { Calendar, Mail, Lock, User, AlertCircle, CheckCircle2, Eye, EyeOff } from 'lucide-react'
 import Link from 'next/link'
 
 export default function SignUpPage() {
@@ -18,6 +18,7 @@ export default function SignUpPage() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
   const router = useRouter()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -140,13 +141,21 @@ export default function SignUpPage() {
                     <Lock className="absolute left-3.5 top-3.5 h-4.5 w-4.5 text-neutral-400 pointer-events-none" />
                     <Input
                       name="password"
-                      type="password"
+                      type={showPassword ? 'text' : 'password'}
                       placeholder="••••••••"
-                      className="pl-11 h-12 rounded-xl border-neutral-200 dark:border-neutral-800 focus-visible:ring-1 focus-visible:ring-black dark:focus-visible:ring-white bg-neutral-50/50 dark:bg-neutral-950/20 font-medium transition-all"
+                      className="pl-11 pr-11 h-12 rounded-xl border-neutral-200 dark:border-neutral-800 focus-visible:ring-1 focus-visible:ring-black dark:focus-visible:ring-white bg-neutral-50/50 dark:bg-neutral-950/20 font-medium transition-all"
                       value={formData.password}
                       onChange={handleChange}
                       required
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3.5 top-3.5 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 focus:outline-none transition-colors"
+                      title={showPassword ? 'Hide password' : 'Show password'}
+                    >
+                      {showPassword ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
+                    </button>
                   </div>
                 </div>
 
@@ -156,13 +165,21 @@ export default function SignUpPage() {
                     <Lock className="absolute left-3.5 top-3.5 h-4.5 w-4.5 text-neutral-400 pointer-events-none" />
                     <Input
                       name="confirmPassword"
-                      type="password"
+                      type={showPassword ? 'text' : 'password'}
                       placeholder="••••••••"
-                      className="pl-11 h-12 rounded-xl border-neutral-200 dark:border-neutral-800 focus-visible:ring-1 focus-visible:ring-black dark:focus-visible:ring-white bg-neutral-50/50 dark:bg-neutral-950/20 font-medium transition-all"
+                      className="pl-11 pr-11 h-12 rounded-xl border-neutral-200 dark:border-neutral-800 focus-visible:ring-1 focus-visible:ring-black dark:focus-visible:ring-white bg-neutral-50/50 dark:bg-neutral-950/20 font-medium transition-all"
                       value={formData.confirmPassword}
                       onChange={handleChange}
                       required
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3.5 top-3.5 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 focus:outline-none transition-colors"
+                      title={showPassword ? 'Hide password' : 'Show password'}
+                    >
+                      {showPassword ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
+                    </button>
                   </div>
                 </div>
               </div>
