@@ -16,7 +16,7 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="container px-4 py-24 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="container max-w-7xl px-4 py-24 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
         <div className="space-y-8">
           <div className="space-y-4">
@@ -29,9 +29,9 @@ export default function ContactPage() {
 
           <div className="space-y-6">
             {[
-              { icon: Mail, title: 'Email Us', detail: 'support@eventify.com' },
-              { icon: Phone, title: 'Call Us', detail: '+1 (555) 123-4567' },
-              { icon: MapPin, title: 'Visit Us', detail: '123 Community Way, Tech City' },
+              { icon: Mail, title: 'Email Us', detail: 'BC240440606mis@vu.edu.pk' },
+              { icon: Phone, title: 'Call Us', detail: '+92 (123) 1234567' },
+              { icon: MapPin, title: 'Visit Us', detail: 'Virtual University Pakistan' },
             ].map((item, i) => (
               <div key={i} className="flex gap-4 p-6 rounded-3xl bg-card border shadow-sm hover:shadow-md transition-all">
                 <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">

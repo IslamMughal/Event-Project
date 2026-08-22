@@ -167,7 +167,7 @@ export default function EventsPage() {
             className={cn(
               "cursor-pointer px-4 py-2 text-xs font-black rounded-xl transition-all border-purple-200 dark:border-purple-900 shadow-sm",
               selectedCategories.length === 0 
-                ? "gradient-cyber text-white shadow-purple-500/20 border-0" 
+                ? "bg-purple-700 text-white border-0 shadow-purple-900/20" 
                 : "hover:border-purple-400 hover:text-purple-600 text-muted-foreground bg-card"
             )}
             onClick={() => setSelectedCategories([])}
@@ -183,7 +183,7 @@ export default function EventsPage() {
                 className={cn(
                   "cursor-pointer px-4 py-2 text-xs font-black rounded-xl transition-all border-purple-200 dark:border-purple-900 shadow-sm",
                   isSelected 
-                    ? "gradient-cyber text-white shadow-purple-500/20 border-0" 
+                    ? "bg-purple-700 text-white border-0 shadow-purple-900/20" 
                     : "hover:border-purple-400 hover:text-purple-600 text-muted-foreground bg-card"
                 )}
                 onClick={() => toggleCategory(category.slug)}
@@ -272,7 +272,7 @@ export default function EventsPage() {
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 lg:hidden">
         <Button
           onClick={() => setViewMode(viewMode === 'list' ? 'map' : 'list')}
-          className="rounded-full h-12 px-6 shadow-2xl shadow-rose-500/30 flex items-center gap-2 font-black gradient-colorful text-white transition-all duration-200"
+          className="rounded-full h-12 px-6 shadow-2xl flex items-center gap-2 font-black bg-purple-700 hover:bg-purple-800 text-white transition-all duration-200"
         >
           {viewMode === 'list' ? (
             <>

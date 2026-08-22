@@ -42,7 +42,7 @@ export default function DashboardLayout({
             <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/5 overflow-hidden">
               {(session?.user as any)?.image ? (
                 <Image
-                  src={(session.user as any).image}
+                  src={(session?.user as any).image}
                   alt="Profile"
                   width={80}
                   height={80}

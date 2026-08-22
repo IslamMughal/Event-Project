@@ -19,8 +19,10 @@ export default function ProfilePage() {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    if (session?.user?.name) setUsername(session.user.name)
-    if ((session?.user as any)?.image) setAvatarUrl((session.user as any).image)
+    if (session?.user) {
+      if (session.user.name) setUsername(session.user.name)
+      if ((session.user as any).image) setAvatarUrl((session.user as any).image)
+    }
   }, [session])
 
   const handleCameraClick = () => {

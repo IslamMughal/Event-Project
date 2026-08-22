@@ -79,15 +79,15 @@ const EventCard = ({ event, isHovered, onHover, initialFavoriteId = null, onFavo
               className="object-cover transition-transform duration-700 group-hover:scale-105"
             />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-purple-500/10 via-rose-500/10 to-amber-500/10 flex items-center justify-center">
-              <Calendar className="h-10 w-10 text-purple-500" />
+            <div className="w-full h-full bg-purple-100 dark:bg-purple-950/60 flex items-center justify-center">
+              <Calendar className="h-10 w-10 text-purple-600" />
             </div>
           )}
           
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
           {event.featured && (
-            <Badge className="absolute top-3 left-3 gradient-colorful text-white font-extrabold text-[10px] tracking-wider uppercase px-2.5 py-1 rounded-lg shadow-lg border-0 flex items-center gap-1">
+            <Badge className="absolute top-3 left-3 bg-purple-700 text-white font-extrabold text-[10px] tracking-wider uppercase px-2.5 py-1 rounded-lg shadow-lg border-0 flex items-center gap-1">
               <Flame className="h-3 w-3 text-amber-300 fill-current" /> Featured
             </Badge>
           )}

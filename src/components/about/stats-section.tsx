@@ -160,7 +160,7 @@ export default function StatsSection() {
           left: 0;
           height: 3px;
           width: 0;
-          background: linear-gradient(90deg, #6C3BFF, #EC4899);
+          background: #6D28D9;
           border-radius: 0 0 1.5rem 1.5rem;
           transition: width 0.45s cubic-bezier(0.4, 0, 0.2, 1);
         }
