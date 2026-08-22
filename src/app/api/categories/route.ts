@@ -3,6 +3,8 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { fetchStrapi } from '@/lib/strapi';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     let data: any[] = [];

@@ -12,6 +12,7 @@ async function main() {
   await prisma.favorite.deleteMany({});
   await prisma.review.deleteMany({});
   await prisma.event.deleteMany({});
+  await prisma.category.deleteMany({});
 
   // ---------------------------------------------------------------------------
   // Users
@@ -48,35 +49,41 @@ async function main() {
   // ---------------------------------------------------------------------------
   const music = await prisma.category.upsert({
     where: { slug: 'music' },
-    update: {},
+    update: { name: 'Music' },
     create: { name: 'Music', slug: 'music', color: '#FF6B6B', icon: '🎵' },
   });
 
   const tech = await prisma.category.upsert({
-    where: { slug: 'tech' },
-    update: {},
-    create: { name: 'Tech', slug: 'tech', color: '#4ECDC4', icon: '💻' },
+    where: { slug: 'technology' },
+    update: { name: 'Technology' },
+    create: { name: 'Technology', slug: 'technology', color: '#4ECDC4', icon: '💻' },
   });
 
   const food = await prisma.category.upsert({
-    where: { slug: 'food' },
-    update: {},
-    create: { name: 'Food', slug: 'food', color: '#F38181', icon: '🍕' },
+    where: { slug: 'food-and-drink' },
+    update: { name: 'Food & Drink' },
+    create: { name: 'Food & Drink', slug: 'food-and-drink', color: '#F38181', icon: '🍔' },
   });
 
   const sports = await prisma.category.upsert({
     where: { slug: 'sports' },
-    update: {},
+    update: { name: 'Sports' },
     create: { name: 'Sports', slug: 'sports', color: '#95E1D3', icon: '⚽' },
   });
 
   const art = await prisma.category.upsert({
-    where: { slug: 'art' },
-    update: {},
-    create: { name: 'Art', slug: 'art', color: '#AA96DA', icon: '🎨' },
+    where: { slug: 'art-and-culture' },
+    update: { name: 'Art & Culture' },
+    create: { name: 'Art & Culture', slug: 'art-and-culture', color: '#AA96DA', icon: '🎨' },
   });
 
-  console.log('✅ Categories seeded: Music, Tech, Food, Sports, Art');
+  const community = await prisma.category.upsert({
+    where: { slug: 'community' },
+    update: { name: 'Community' },
+    create: { name: 'Community', slug: 'community', color: '#FFD166', icon: '🤝' },
+  });
+
+  console.log('✅ Categories seeded: Music, Technology, Food & Drink, Sports, Art & Culture, Community');
 
   // ---------------------------------------------------------------------------
   // Events  (6 published; 3 featured)
