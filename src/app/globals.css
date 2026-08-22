@@ -215,3 +215,8 @@
 .glow-border:hover::after {
   opacity: 1;
 }
+
+/* Ensure Leaflet map stays strictly below fixed/sticky header */
+.leaflet-container {
+  z-index: 10 !important;
+}

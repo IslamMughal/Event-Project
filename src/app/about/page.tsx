@@ -13,10 +13,10 @@ export default function AboutPage() {
       <section className="relative py-20 md:py-28 bg-slate-950 border-b border-purple-500/20 overflow-hidden text-white">
         <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
           <Image
-            src="/images/hero-bg.jpg"
-            alt="Event Atmosphere Background"
+            src="/images/about-hero-bg.jpg"
+            alt="Event Atmosphere Background with Logo"
             fill
-            className="object-cover object-center opacity-30"
+            className="object-cover object-center opacity-50"
             unoptimized
           />
           <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/70 to-slate-950/90" />
@@ -52,24 +52,36 @@ export default function AboutPage() {
 
       {/* Call to action */}
       <section className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-purple-900 text-white rounded-[2.5rem] p-10 sm:p-16 text-center space-y-6 relative overflow-hidden shadow-2xl">
-          <h2 className="text-3xl sm:text-4xl font-black max-w-2xl mx-auto leading-tight">
-            Be part of the next big community event
-          </h2>
-          <p className="text-slate-100 text-base sm:text-lg max-w-lg mx-auto font-medium">
-            Browse our upcoming events or start hosting your own gathering today.
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
-            <Link href="/events">
-              <Button className="h-12 px-8 rounded-xl bg-white text-purple-900 font-extrabold hover:bg-slate-100 shadow-lg">
-                Explore Events <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-            <Link href="/contact">
-              <Button variant="outline" className="h-12 px-8 rounded-xl border-white/40 text-white font-extrabold hover:bg-white/10 hover:text-white">
-                Contact Us
-              </Button>
-            </Link>
+        <div className="text-white rounded-[2.5rem] p-10 sm:p-16 text-center relative overflow-hidden shadow-2xl">
+          <div className="absolute inset-0 z-0">
+            <Image
+              src="/images/cta-event-bg.jpg"
+              alt="Community Event Gathering"
+              fill
+              className="object-cover object-center"
+              unoptimized
+            />
+            <div className="absolute inset-0 bg-purple-950/75 backdrop-blur-[2px]" />
+          </div>
+          <div className="relative z-10 flex flex-col items-center space-y-6">
+            <h2 className="text-3xl sm:text-4xl font-black max-w-2xl mx-auto leading-tight">
+              Be part of the next big community event
+            </h2>
+            <p className="text-slate-100 text-base sm:text-lg max-w-lg mx-auto font-medium">
+              Browse our upcoming events or start hosting your own gathering today.
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
+              <Link href="/events">
+                <Button className="h-12 px-8 rounded-xl bg-white text-purple-900 font-extrabold hover:bg-slate-100 shadow-lg">
+                  Explore Events <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+              <Link href="/contact">
+                <Button variant="outline" className="h-12 px-8 rounded-xl border-white/40 bg-transparent text-white font-extrabold hover:bg-white/20 hover:text-white transition-colors">
+                  Contact Us
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
