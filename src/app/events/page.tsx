@@ -5,7 +5,7 @@ import { Event, Category, Favorite } from '@/types'
 import EventCard from '@/components/events/event-card'
 import EventMap from '@/components/events/event-map'
 import { Input } from '@/components/ui/input'
-import { Search, SlidersHorizontal, Map as MapIcon, List as ListIcon, Loader2 } from 'lucide-react'
+import { Search, SlidersHorizontal, Map as MapIcon, List as ListIcon, Loader2, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { getEvents, getCategories, getMyFavorites } from '@/lib/api'
@@ -106,7 +106,7 @@ export default function EventsPage() {
     fetchEvents(nextPage, true)
   }
 
-  // Client-side multi-category filter (API supports single category; this handles multi-select locally)
+  // Client-side multi-category filter
   const filteredEvents = useMemo(() => {
     if (selectedCategories.length <= 1) return events
     return events.filter(event =>
@@ -137,22 +137,25 @@ export default function EventsPage() {
       <div className="flex flex-col gap-5 shrink-0">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div className="space-y-1">
-            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">Discover Events</h1>
-            <p className="text-muted-foreground text-sm sm:text-base">Find and RSVP to amazing events near you.</p>
+            <div className="inline-flex items-center gap-1 text-xs font-black uppercase tracking-widest text-purple-600 dark:text-purple-400">
+              <Sparkles className="h-3.5 w-3.5" /> Explore Calendar
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-black tracking-tight">Discover Events</h1>
+            <p className="text-muted-foreground text-sm sm:text-base">Find concerts, hackathons, sports, and cultural festivals near you.</p>
           </div>
           
           <div className="flex items-center gap-3 w-full md:w-auto">
             <div className="relative w-full md:w-[320px]">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-neutral-400" />
+              <Search className="absolute left-3 top-3 h-4 w-4 text-purple-500" />
               <Input
                 placeholder="Search events or locations..."
-                className="pl-9 h-11 rounded-xl border-neutral-200 focus-visible:ring-1 focus-visible:ring-black dark:focus-visible:ring-white bg-card"
+                className="pl-9 h-11 rounded-xl border-purple-200 dark:border-purple-900 focus-visible:ring-2 focus-visible:ring-purple-600 bg-card shadow-sm"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <Button variant="outline" className="h-11 px-4 font-bold border-neutral-200 rounded-xl flex items-center gap-2">
-              <SlidersHorizontal className="h-4 w-4" /> Filters
+            <Button variant="outline" className="h-11 px-4 font-extrabold border-purple-300 dark:border-purple-800 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/50 rounded-xl flex items-center gap-2">
+              <SlidersHorizontal className="h-4 w-4 text-purple-600" /> Filters
             </Button>
           </div>
         </div>
@@ -162,8 +165,10 @@ export default function EventsPage() {
           <Badge
             variant={selectedCategories.length === 0 ? "default" : "outline"}
             className={cn(
-              "cursor-pointer px-4 py-2 text-xs font-bold rounded-lg transition-colors border-neutral-200",
-              selectedCategories.length === 0 ? "bg-black hover:bg-black text-white dark:bg-white dark:text-black border-0" : "hover:border-neutral-400 text-neutral-600 dark:text-neutral-300"
+              "cursor-pointer px-4 py-2 text-xs font-black rounded-xl transition-all border-purple-200 dark:border-purple-900 shadow-sm",
+              selectedCategories.length === 0 
+                ? "gradient-cyber text-white shadow-purple-500/20 border-0" 
+                : "hover:border-purple-400 hover:text-purple-600 text-muted-foreground bg-card"
             )}
             onClick={() => setSelectedCategories([])}
           >
@@ -176,8 +181,10 @@ export default function EventsPage() {
                 key={category.id}
                 variant={isSelected ? "default" : "outline"}
                 className={cn(
-                  "cursor-pointer px-4 py-2 text-xs font-bold rounded-lg transition-colors border-neutral-200",
-                  isSelected ? "bg-black hover:bg-black text-white dark:bg-white dark:text-black border-0" : "hover:border-neutral-400 text-neutral-600 dark:text-neutral-300"
+                  "cursor-pointer px-4 py-2 text-xs font-black rounded-xl transition-all border-purple-200 dark:border-purple-900 shadow-sm",
+                  isSelected 
+                    ? "gradient-cyber text-white shadow-purple-500/20 border-0" 
+                    : "hover:border-purple-400 hover:text-purple-600 text-muted-foreground bg-card"
                 )}
                 onClick={() => toggleCategory(category.slug)}
               >
@@ -194,8 +201,8 @@ export default function EventsPage() {
         <div className={`w-full lg:w-3/5 overflow-y-auto pr-3 flex flex-col gap-8 pb-20 lg:pb-8 scroll-smooth ${viewMode === 'map' ? 'hidden lg:flex' : 'flex'}`}>
           {loading ? (
             <div className="flex flex-col items-center justify-center py-20 flex-1">
-              <Loader2 className="h-10 w-10 animate-spin text-neutral-400 mb-4" />
-              <p className="text-muted-foreground text-sm">Searching the events calendar...</p>
+              <Loader2 className="h-10 w-10 animate-spin text-purple-600 mb-4" />
+              <p className="text-muted-foreground text-sm font-semibold">Searching the events calendar...</p>
             </div>
           ) : filteredEvents.length > 0 ? (
             <>
@@ -219,13 +226,13 @@ export default function EventsPage() {
                 <div className="flex justify-center py-4">
                   <Button
                     variant="outline"
-                    className="font-bold h-11 border-neutral-300 rounded-xl px-6"
+                    className="font-extrabold h-11 border-purple-300 dark:border-purple-800 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/50 rounded-xl px-6"
                     onClick={handleLoadMore}
                     disabled={loadingMore}
                   >
                     {loadingMore ? (
                       <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading more...
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin text-purple-600" /> Loading more...
                       </>
                     ) : (
                       'Load More Events'
@@ -236,14 +243,14 @@ export default function EventsPage() {
             </>
           ) : (
             <div className="flex flex-col items-center justify-center py-20 text-center flex-1">
-              <div className="h-16 w-16 bg-neutral-100 dark:bg-neutral-800 rounded-full flex items-center justify-center mb-4">
-                <Search className="h-8 w-8 text-neutral-400" />
+              <div className="h-16 w-16 bg-purple-100 dark:bg-purple-950/60 rounded-2xl flex items-center justify-center mb-4 border border-purple-200 dark:border-purple-800">
+                <Search className="h-8 w-8 text-purple-600" />
               </div>
               <h3 className="text-xl font-bold">No events found</h3>
               <p className="text-muted-foreground text-sm mt-1 max-w-xs mx-auto">
                 We couldn't find any events matching your selected filter parameters.
               </p>
-              <Button variant="link" onClick={() => {setSearchQuery(''); setSelectedCategories([])}} className="mt-4 text-neutral-900 dark:text-neutral-100 font-extrabold hover:underline">
+              <Button variant="link" onClick={() => {setSearchQuery(''); setSelectedCategories([])}} className="mt-4 text-purple-600 dark:text-purple-400 font-black hover:underline">
                 Clear all filters
               </Button>
             </div>
@@ -251,7 +258,7 @@ export default function EventsPage() {
         </div>
 
         {/* Map Column */}
-        <div className={`w-full lg:w-2/5 h-full rounded-2xl overflow-hidden border border-neutral-200 dark:border-neutral-800 shadow-sm bg-neutral-50 dark:bg-neutral-900 ${viewMode === 'list' ? 'hidden lg:block' : 'block'}`}>
+        <div className={`w-full lg:w-2/5 h-full rounded-2xl overflow-hidden border border-purple-500/20 shadow-xl bg-card ${viewMode === 'list' ? 'hidden lg:block' : 'block'}`}>
           <EventMap
             events={filteredEvents}
             center={mapCenter}
@@ -265,7 +272,7 @@ export default function EventsPage() {
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 lg:hidden">
         <Button
           onClick={() => setViewMode(viewMode === 'list' ? 'map' : 'list')}
-          className="rounded-full h-12 px-6 shadow-2xl flex items-center gap-2 font-bold bg-neutral-900 hover:bg-neutral-800 text-white dark:bg-white dark:text-black dark:hover:bg-neutral-200 transition-all duration-200"
+          className="rounded-full h-12 px-6 shadow-2xl shadow-rose-500/30 flex items-center gap-2 font-black gradient-colorful text-white transition-all duration-200"
         >
           {viewMode === 'list' ? (
             <>

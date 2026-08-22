@@ -20,24 +20,26 @@ export async function POST(req: NextRequest) {
     const formData = await req.formData();
     const file = formData.get('file');
 
-    if (!file || typeof file === 'string') {
+    if (!file || !(file instanceof Blob)) {
       return NextResponse.json({ error: { status: 400, message: 'A file is required' } }, { status: 400 });
     }
 
-    const bytes = await (file as File).arrayBuffer();
+    const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    
+
     // Convert to base64 Data URI for direct Cloudinary upload
+    const mimeType = (file as File).type || 'image/jpeg';
     const base64Data = buffer.toString('base64');
-    const dataURI = `data:${(file as File).type};base64,${base64Data}`;
+    const dataURI = `data:${mimeType};base64,${base64Data}`;
 
     const uploadResponse = await cloudinary.uploader.upload(dataURI, {
       folder: 'eventify',
+      resource_type: 'image',
     });
 
     return NextResponse.json({ data: { url: uploadResponse.secure_url } });
-  } catch (error) {
-    console.error('upload error:', error);
-    return NextResponse.json({ error: { status: 500, message: 'Upload failed' } }, { status: 500 });
+  } catch (error: any) {
+    console.error('upload error:', error?.message || error);
+    return NextResponse.json({ error: { status: 500, message: error?.message || 'Upload failed' } }, { status: 500 });
   }
 }

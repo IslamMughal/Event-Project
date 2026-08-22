@@ -3,7 +3,7 @@
 import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Calendar, MapPin, Clock, Heart } from 'lucide-react'
+import { Calendar, MapPin, Clock, Heart, Sparkles, Flame } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -61,15 +61,15 @@ const EventCard = ({ event, isHovered, onHover, initialFavoriteId = null, onFavo
   return (
     <Card 
       className={cn(
-        "overflow-hidden transition-all duration-300 border border-neutral-200 dark:border-neutral-800 hover:border-neutral-400 dark:hover:border-neutral-600 hover:shadow-lg group flex flex-col h-full bg-card rounded-2xl",
-        isHovered && "border-neutral-900 dark:border-neutral-100 shadow-lg"
+        "overflow-hidden transition-all duration-300 border border-purple-500/20 hover:border-purple-500/60 hover:shadow-2xl hover:shadow-purple-500/20 group flex flex-col h-full bg-card rounded-2xl",
+        isHovered && "border-purple-600 shadow-2xl shadow-purple-500/25 scale-[1.02]"
       )}
       onMouseEnter={() => onHover?.(String(event.id))}
       onMouseLeave={() => onHover?.(null)}
     >
       <Link href={`/events/${event.slug}`} className="flex flex-col h-full">
         {/* Banner Image Container */}
-        <div className="relative aspect-[16/10] w-full overflow-hidden bg-neutral-100 dark:bg-neutral-900">
+        <div className="relative aspect-[16/10] w-full overflow-hidden bg-purple-50 dark:bg-purple-950/40">
           {(event.imageUrl || event.image) ? (
             <Image
               src={event.imageUrl || event.image?.url || ''}
@@ -79,16 +79,16 @@ const EventCard = ({ event, isHovered, onHover, initialFavoriteId = null, onFavo
               className="object-cover transition-transform duration-700 group-hover:scale-105"
             />
           ) : (
-            <div className="w-full h-full bg-neutral-100 dark:bg-neutral-900 flex items-center justify-center">
-              <Calendar className="h-10 w-10 text-neutral-300" />
+            <div className="w-full h-full bg-gradient-to-br from-purple-500/10 via-rose-500/10 to-amber-500/10 flex items-center justify-center">
+              <Calendar className="h-10 w-10 text-purple-500" />
             </div>
           )}
           
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
           {event.featured && (
-            <Badge className="absolute top-3 left-3 bg-black hover:bg-black text-white dark:bg-white dark:text-black font-semibold text-[10px] tracking-wider uppercase px-2.5 py-1 rounded-md shadow-sm border-0">
-              Featured
+            <Badge className="absolute top-3 left-3 gradient-colorful text-white font-extrabold text-[10px] tracking-wider uppercase px-2.5 py-1 rounded-lg shadow-lg border-0 flex items-center gap-1">
+              <Flame className="h-3 w-3 text-amber-300 fill-current" /> Featured
             </Badge>
           )}
 
@@ -97,8 +97,8 @@ const EventCard = ({ event, isHovered, onHover, initialFavoriteId = null, onFavo
             size="icon"
             onClick={handleFavoriteClick}
             className={cn(
-              "absolute top-3 right-3 rounded-full h-9 w-9 bg-white/80 dark:bg-black/80 hover:bg-white dark:hover:bg-black backdrop-blur-sm transition-all duration-200 shadow-sm z-10",
-              isFavorite ? "text-red-500" : "text-neutral-600 dark:text-neutral-300"
+              "absolute top-3 right-3 rounded-full h-9 w-9 bg-white/90 dark:bg-slate-900/90 hover:bg-white dark:hover:bg-slate-900 backdrop-blur-md transition-all duration-200 shadow-md z-10",
+              isFavorite ? "text-rose-500" : "text-slate-600 dark:text-slate-300 hover:text-rose-500"
             )}
           >
             <Heart className={cn("h-4 w-4 transition-transform duration-200 active:scale-75", isFavorite && "fill-current")} />
@@ -110,31 +110,31 @@ const EventCard = ({ event, isHovered, onHover, initialFavoriteId = null, onFavo
           <div className="space-y-2">
             <div className="flex items-center justify-between gap-2">
               {event.category && (
-                <span className="text-xs font-bold tracking-wider uppercase text-neutral-500 dark:text-neutral-400">
+                <span className="text-[11px] font-black tracking-wider uppercase text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-950/70 px-2.5 py-0.5 rounded-md border border-purple-200 dark:border-purple-800">
                   {event.category.name}
                 </span>
               )}
-              <span className="font-extrabold text-sm sm:text-base text-neutral-900 dark:text-neutral-100">
+              <span className="font-black text-sm sm:text-base text-rose-500">
                 {ticketPrice === 0 ? 'FREE' : `$${ticketPrice}`}
               </span>
             </div>
 
-            <h3 className="font-bold text-lg sm:text-xl text-neutral-900 dark:text-neutral-100 leading-snug line-clamp-1 group-hover:text-neutral-600 dark:group-hover:text-neutral-300 transition-colors">
+            <h3 className="font-extrabold text-lg sm:text-xl text-foreground leading-snug line-clamp-1 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
               {event.title}
             </h3>
           </div>
 
-          <div className="space-y-1.5 pt-1 border-t border-neutral-100 dark:border-neutral-900">
-            <div className="flex items-center gap-2 text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
-              <Calendar className="h-4 w-4 shrink-0 text-neutral-400" />
+          <div className="space-y-1.5 pt-2 border-t border-purple-100 dark:border-purple-900/50">
+            <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
+              <Calendar className="h-4 w-4 shrink-0 text-purple-500" />
               <span>{event.date}</span>
             </div>
-            <div className="flex items-center gap-2 text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
-              <Clock className="h-4 w-4 shrink-0 text-neutral-400" />
+            <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
+              <Clock className="h-4 w-4 shrink-0 text-cyan-500" />
               <span>{event.time}</span>
             </div>
-            <div className="flex items-center gap-2 text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
-              <MapPin className="h-4 w-4 shrink-0 text-neutral-400" />
+            <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
+              <MapPin className="h-4 w-4 shrink-0 text-rose-500" />
               <span className="line-clamp-1">{event.venueAddress || event.venue_address}</span>
             </div>
           </div>

@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import Image from 'next/image'
 import { useSession, signOut } from 'next-auth/react'
 import { redirect, usePathname } from 'next/navigation'
 import { Calendar, User, Settings, LogOut, Heart, PlusCircle } from 'lucide-react'
@@ -38,8 +39,18 @@ export default function DashboardLayout({
         {/* Sidebar */}
         <aside className="w-full md:w-64 space-y-4">
           <div className="p-6 rounded-2xl border bg-card flex flex-col items-center text-center gap-4 shadow-sm">
-            <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/5">
-              <User className="h-10 w-10 text-primary" />
+            <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/5 overflow-hidden">
+              {(session?.user as any)?.image ? (
+                <Image
+                  src={(session.user as any).image}
+                  alt="Profile"
+                  width={80}
+                  height={80}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <User className="h-10 w-10 text-primary" />
+              )}
             </div>
             <div>
               <h2 className="font-bold text-lg">{session?.user?.name || 'User'}</h2>

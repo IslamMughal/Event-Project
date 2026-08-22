@@ -1,20 +1,113 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'
-import { User, Mail, Shield, Save, Camera } from 'lucide-react'
+import { User, Mail, Shield, Save, Camera, Loader2 } from 'lucide-react'
 
 export default function ProfilePage() {
-  const { data: session } = useSession()
-  const [loading, setLoading] = useState(false)
+  const { data: session, update } = useSession()
+  const [username, setUsername] = useState(session?.user?.name || '')
+  const [avatarUrl, setAvatarUrl] = useState<string>((session?.user as any)?.image || '')
+  const [uploading, setUploading] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [uploadError, setUploadError] = useState('')
+  const [saveMessage, setSaveMessage] = useState('')
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const handleSave = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (session?.user?.name) setUsername(session.user.name)
+    if ((session?.user as any)?.image) setAvatarUrl((session.user as any).image)
+  }, [session])
+
+  const handleCameraClick = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Permissive file validation: check MIME type OR file extension
+    // Windows browsers can report empty file.type for certain images (.jpg, .png, .webp, etc.)
+    const allowedExtensions = /\.(jpg|jpeg|png|gif|webp|avif|svg|bmp)$/i
+    const isValidType = (file.type && file.type.startsWith('image/')) || allowedExtensions.test(file.name)
+
+    if (!isValidType) {
+      setUploadError('Please select a valid image file (jpg, png, webp, etc).')
+      return
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadError('Image must be smaller than 5MB.')
+      return
+    }
+
+    setUploadError('')
+    setUploading(true)
+
+    try {
+      const formData = new FormData()
+      const mimeType = file.type || 'image/jpeg'
+      const fixedFile = new File([file], file.name, { type: mimeType })
+      formData.append('file', fixedFile)
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      })
+
+      const json = await res.json()
+
+      if (!res.ok) {
+        throw new Error(json?.error?.message || 'Upload failed')
+      }
+
+      const url = json.data.url
+      setAvatarUrl(url)
+
+      // Save updated avatar URL to user profile
+      await saveProfile(username, url)
+    } catch (err: any) {
+      setUploadError(err.message || 'Upload failed. Please try again.')
+    } finally {
+      setUploading(false)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
+
+  const saveProfile = async (name: string, image?: string) => {
+    setSaving(true)
+    setSaveMessage('')
+    try {
+      const res = await fetch('/api/user/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: name,
+          ...(image !== undefined && { image }),
+        }),
+      })
+
+      const json = await res.json()
+      if (!res.ok) throw new Error(json?.error?.message || 'Save failed')
+
+      await update({ name: json.data.username, image: json.data.image })
+      setSaveMessage('Profile saved successfully!')
+      setTimeout(() => setSaveMessage(''), 3000)
+    } catch (err: any) {
+      setSaveMessage(err.message || 'Save failed.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
-    setTimeout(() => setLoading(false), 1000)
+    await saveProfile(username, avatarUrl || undefined)
   }
 
   return (
@@ -37,7 +130,12 @@ export default function ProfilePage() {
                   <label className="text-sm font-semibold flex items-center gap-2">
                     <User className="h-4 w-4 text-primary" /> Display Name
                   </label>
-                  <Input defaultValue={session?.user?.name || ''} className="rounded-xl h-12" />
+                  <Input
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="rounded-xl h-12"
+                    placeholder="Your display name"
+                  />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-semibold flex items-center gap-2">
@@ -47,9 +145,19 @@ export default function ProfilePage() {
                 </div>
               </div>
 
+              {saveMessage && (
+                <p className={`text-sm font-medium ${saveMessage.includes('successfully') ? 'text-green-600' : 'text-destructive'}`}>
+                  {saveMessage}
+                </p>
+              )}
+
               <div className="pt-4 flex justify-end">
-                <Button className="rounded-xl h-12 px-8 font-bold gap-2" disabled={loading}>
-                  {loading ? 'Saving...' : <><Save className="h-4 w-4" /> Save Changes</>}
+                <Button className="rounded-xl h-12 px-8 font-bold gap-2" disabled={saving || uploading}>
+                  {saving ? (
+                    <><Loader2 className="h-4 w-4 animate-spin" /> Saving...</>
+                  ) : (
+                    <><Save className="h-4 w-4" /> Save Changes</>
+                  )}
                 </Button>
               </div>
             </form>
@@ -59,13 +167,52 @@ export default function ProfilePage() {
         <div className="space-y-6">
           <Card className="rounded-[2rem] shadow-xl border-none text-center p-6">
             <div className="relative mx-auto w-32 h-32 mb-4">
-              <div className="w-full h-full rounded-full bg-primary/10 flex items-center justify-center border-4 border-background shadow-lg">
-                <User className="h-16 w-16 text-primary" />
+              <div className="w-full h-full rounded-full bg-primary/10 flex items-center justify-center border-4 border-background shadow-lg overflow-hidden">
+                {avatarUrl ? (
+                  <Image
+                    src={avatarUrl}
+                    alt="Profile picture"
+                    width={128}
+                    height={128}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <User className="h-16 w-16 text-primary" />
+                )}
               </div>
-              <Button size="icon" variant="secondary" className="absolute bottom-0 right-0 rounded-full h-10 w-10 border-4 border-background shadow-md">
-                <Camera className="h-4 w-4" />
+              <Button
+                type="button"
+                size="icon"
+                variant="secondary"
+                onClick={handleCameraClick}
+                disabled={uploading}
+                className="absolute bottom-0 right-0 rounded-full h-10 w-10 border-4 border-background shadow-md"
+                title="Upload profile photo"
+              >
+                {uploading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Camera className="h-4 w-4" />
+                )}
               </Button>
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
+              />
             </div>
+
+            {uploadError && (
+              <p className="text-xs text-destructive mb-2">{uploadError}</p>
+            )}
+
+            {uploading && (
+              <p className="text-xs text-muted-foreground mb-2">Uploading photo…</p>
+            )}
+
             <h3 className="font-bold text-xl">{session?.user?.name || 'User'}</h3>
             <p className="text-sm text-muted-foreground mb-6">Member since 2026</p>
             <div className="flex justify-center gap-4">
