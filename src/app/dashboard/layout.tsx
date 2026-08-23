@@ -38,7 +38,7 @@ export default function DashboardLayout({
       <div className="flex flex-col md:flex-row gap-8">
         {/* Sidebar */}
         <aside className="w-full md:w-64 space-y-4">
-          <div className="p-6 rounded-2xl border bg-card flex flex-col items-center text-center gap-4 shadow-sm">
+          <div className="p-6 rounded-2xl border border-purple-500/10 bg-white/40 dark:bg-slate-900/40 backdrop-blur-md flex flex-col items-center text-center gap-4 shadow-lg">
             <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/5 overflow-hidden">
               {(session?.user as any)?.image || session?.user?.image ? (
                 <Image

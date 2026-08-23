@@ -49,7 +49,7 @@ const Navbar = () => {
   ]
 
   return (
-    <header className="sticky top-0 z-[9999] w-full border-b-2 border-purple-500/20 bg-background/90 backdrop-blur-2xl shadow-md">
+    <header className="sticky top-0 z-[9999] w-full border-b border-purple-500/20 bg-background/80 backdrop-blur-md shadow-md">
       <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex h-16 md:h-20 items-center justify-between gap-4">
         {/* Left: Logo */}
         <div className="flex items-center">
@@ -144,7 +144,7 @@ const Navbar = () => {
 
                   {/* Solid Profile Dropdown Menu */}
                   {isProfileOpen && (
-                    <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-white dark:bg-slate-900 border-2 border-purple-500/30 shadow-2xl p-2.5 z-[10000] animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-white dark:bg-slate-900 border border-purple-500/20 shadow-2xl p-2.5 z-[10000] animate-in fade-in slide-in-from-top-2 duration-200">
                       {/* User Info Header */}
                       <div className="p-3 bg-purple-500/10 rounded-xl mb-1 flex items-center gap-3">
                         <div className="relative h-10 w-10 rounded-full overflow-hidden shrink-0 border-2 border-purple-500/40 bg-white flex items-center justify-center">
@@ -342,7 +342,7 @@ const Navbar = () => {
 
       {/* Mobile Search Overlay */}
       {isSearchOpen && (
-        <div className="md:hidden border-b-2 border-purple-200 bg-background p-4 animate-in slide-in-from-top duration-300">
+        <div className="md:hidden border-b border-purple-500/20 bg-background/80 backdrop-blur-md p-4 animate-in slide-in-from-top duration-300">
           <div className="relative flex items-center gap-2">
             <Input
               type="search"

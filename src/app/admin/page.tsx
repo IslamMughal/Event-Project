@@ -23,7 +23,8 @@ import {
   Tag,
   Clock,
   Check,
-  PauseCircle
+  PauseCircle,
+  Pencil
 } from 'lucide-react'
 
 export default function AdminPage() {
@@ -34,6 +35,90 @@ export default function AdminPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'PUBLISHED' | 'DRAFT' | 'FEATURED'>('ALL')
   const [actionLoadingId, setActionLoadingId] = useState<number | null>(null)
+
+  // Category & Editing state variables
+  const [categories, setCategories] = useState<any[]>([])
+  const [editingEvent, setEditingEvent] = useState<any | null>(null)
+  const [isSaving, setIsSaving] = useState(false)
+  const [editForm, setEditForm] = useState({
+    title: '',
+    description: '',
+    date: '',
+    time: '',
+    venueAddress: '',
+    ticketPrice: '',
+    categoryId: ''
+  })
+
+  // Fetch categories on mount
+  useEffect(() => {
+    fetch('/api/categories')
+      .then((res) => res.json())
+      .then((json) => setCategories(json.data || []))
+      .catch((err) => console.error('Failed to load categories:', err))
+  }, [])
+
+  const handleEditClick = (event: any) => {
+    setEditingEvent(event)
+    setEditForm({
+      title: event.title || '',
+      description: event.description || '',
+      date: event.date || '',
+      time: event.time || '',
+      venueAddress: event.venueAddress || event.venue_address || '',
+      ticketPrice: event.ticketPrice !== undefined ? String(event.ticketPrice) : '',
+      categoryId: event.categoryId ? String(event.categoryId) : ''
+    })
+  }
+
+  const handleEditSave = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!editingEvent) return
+    setIsSaving(true)
+    try {
+      const res = await fetch('/api/admin/events', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: editingEvent.id,
+          title: editForm.title,
+          description: editForm.description,
+          date: editForm.date,
+          time: editForm.time,
+          venueAddress: editForm.venueAddress,
+          ticketPrice: Number(editForm.ticketPrice) || 0,
+          categoryId: Number(editForm.categoryId)
+        })
+      })
+      const json = await res.json()
+      if (res.ok) {
+        setEvents((prev) =>
+          prev.map((event) =>
+            event.id === editingEvent.id
+              ? {
+                  ...event,
+                  title: json.data.title,
+                  description: json.data.description,
+                  date: json.data.date,
+                  time: json.data.time,
+                  venueAddress: json.data.venueAddress,
+                  ticketPrice: json.data.ticketPrice,
+                  categoryId: json.data.categoryId,
+                  category: categories.find((c) => c.id === json.data.categoryId) || event.category
+                }
+              : event
+          )
+        )
+        setEditingEvent(null)
+      } else {
+        alert(json.error?.message || 'Failed to save event details')
+      }
+    } catch (err) {
+      console.error('Save event error:', err)
+    } finally {
+      setIsSaving(false)
+    }
+  }
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -407,6 +492,16 @@ export default function AdminPage() {
                           <Star className={`h-4 w-4 ${event.featured ? 'fill-amber-300 text-amber-300' : ''}`} />
                           {event.featured ? 'Featured Spotlight' : 'Make Featured'}
                         </Button>
+
+                        {/* Edit Details Button */}
+                        <Button
+                          onClick={() => handleEditClick(event)}
+                          variant="outline"
+                          size="sm"
+                          className="rounded-xl h-10 px-4 font-bold text-xs gap-1.5 border border-purple-500/20 text-purple-700 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/50 shadow-sm"
+                        >
+                          <Pencil className="h-4 w-4" /> Edit Details
+                        </Button>
                       </div>
                     </div>
                   </div>
@@ -414,6 +509,121 @@ export default function AdminPage() {
               </Card>
             )
           })}
+        </div>
+      )}
+
+      {/* Edit Event Modal Overlay */}
+      {editingEvent && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 border-2 border-purple-500/20 rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl animate-in zoom-in-95 duration-200">
+            <div className="p-6 sm:p-8 space-y-6">
+              <div className="flex justify-between items-center border-b border-purple-100 dark:border-purple-900 pb-4">
+                <h2 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">Edit Event Details</h2>
+                <Button variant="ghost" size="icon" onClick={() => setEditingEvent(null)} className="h-8 w-8 rounded-full">
+                  <span className="text-lg font-bold">×</span>
+                </Button>
+              </div>
+
+              <form onSubmit={handleEditSave} className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5 sm:col-span-2">
+                    <label className="text-xs font-black uppercase tracking-wider text-purple-600/70 dark:text-purple-400/70">Event Title</label>
+                    <Input
+                      value={editForm.title}
+                      onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                      required
+                      placeholder="e.g. Shandur Polo Festival 2025"
+                      className="rounded-xl h-11"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-black uppercase tracking-wider text-purple-600/70 dark:text-purple-450/70">Category</label>
+                    <select
+                      value={editForm.categoryId}
+                      onChange={(e) => setEditForm({ ...editForm, categoryId: e.target.value })}
+                      required
+                      className="w-full h-11 px-3.5 rounded-xl border border-purple-200 dark:border-purple-900/60 bg-transparent text-sm font-medium focus:outline-none focus:ring-2 focus:ring-purple-600"
+                    >
+                      <option value="" disabled>Select a Category</option>
+                      {categories.map((c) => (
+                        <option key={c.id} value={c.id} className="text-slate-900 dark:text-white bg-white dark:bg-slate-900">
+                          {c.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-black uppercase tracking-wider text-purple-600/70 dark:text-purple-400/70">Ticket Price ($)</label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={editForm.ticketPrice}
+                      onChange={(e) => setEditForm({ ...editForm, ticketPrice: e.target.value })}
+                      required
+                      placeholder="0 for Free"
+                      className="rounded-xl h-11"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-black uppercase tracking-wider text-purple-600/70 dark:text-purple-400/70">Date (YYYY-MM-DD)</label>
+                    <Input
+                      value={editForm.date}
+                      onChange={(e) => setEditForm({ ...editForm, date: e.target.value })}
+                      required
+                      placeholder="e.g. 2025-08-07"
+                      className="rounded-xl h-11"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-black uppercase tracking-wider text-purple-600/70 dark:text-purple-400/70">Time (HH:MM)</label>
+                    <Input
+                      value={editForm.time}
+                      onChange={(e) => setEditForm({ ...editForm, time: e.target.value })}
+                      required
+                      placeholder="e.g. 09:00"
+                      className="rounded-xl h-11"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5 sm:col-span-2">
+                    <label className="text-xs font-black uppercase tracking-wider text-purple-600/70 dark:text-purple-400/70">Venue Address</label>
+                    <Input
+                      value={editForm.venueAddress}
+                      onChange={(e) => setEditForm({ ...editForm, venueAddress: e.target.value })}
+                      required
+                      placeholder="e.g. Shandur Polo Ground, Shandur Pass..."
+                      className="rounded-xl h-11"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5 sm:col-span-2">
+                    <label className="text-xs font-black uppercase tracking-wider text-purple-600/70 dark:text-purple-400/70">Description</label>
+                    <textarea
+                      value={editForm.description}
+                      onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                      rows={4}
+                      placeholder="Describe the event details..."
+                      className="w-full p-3.5 rounded-xl border border-purple-200 dark:border-purple-900/60 bg-transparent text-sm font-medium focus:outline-none focus:ring-2 focus:ring-purple-600"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-3 pt-4 border-t border-purple-100 dark:border-purple-900/50 mt-6">
+                  <Button type="button" variant="outline" onClick={() => setEditingEvent(null)} className="rounded-xl h-11 px-5">
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={isSaving} className="rounded-xl h-11 px-6 bg-purple-700 hover:bg-purple-800 text-white font-extrabold gap-1.5">
+                    {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Save Changes'}
+                  </Button>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
       )}
     </div>

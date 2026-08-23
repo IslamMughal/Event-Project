@@ -30,7 +30,7 @@ export async function PATCH(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { id, status, featured } = body;
+    const { id, status, featured, title, description, date, time, venueAddress, ticketPrice, categoryId } = body;
 
     if (!id) {
       return NextResponse.json({ error: { status: 400, message: 'id is required' } }, { status: 400 });
@@ -41,6 +41,13 @@ export async function PATCH(req: NextRequest) {
       data: {
         ...(status && { status }),
         ...(featured !== undefined && { featured }),
+        ...(title && { title }),
+        ...(description !== undefined && { description }),
+        ...(date && { date }),
+        ...(time && { time }),
+        ...(venueAddress && { venueAddress }),
+        ...(ticketPrice !== undefined && { ticketPrice: Number(ticketPrice) }),
+        ...(categoryId && { categoryId: Number(categoryId) }),
       },
     });
 
