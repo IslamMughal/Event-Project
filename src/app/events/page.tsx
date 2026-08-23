@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo, useEffect, useCallback } from 'react'
+import React, { useState, useMemo, useEffect, useCallback, useRef, Suspense } from 'react'
 import { Event, Category, Favorite } from '@/types'
 import EventCard from '@/components/events/event-card'
 import EventMap from '@/components/events/event-map'
@@ -12,13 +12,45 @@ import { getEvents, getCategories, getMyFavorites } from '@/lib/api'
 import { useSession } from 'next-auth/react'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
+import { useRouter, useSearchParams } from 'next/navigation'
 
-export default function EventsPage() {
+function EventsPageContent() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const isInitialized = useRef(false)
   const [hoveredEventId, setHoveredEventId] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list')
   const [page, setPage] = useState(1)
+
+  // Initialize state from URL search parameters on mount
+  useEffect(() => {
+    const categoryParam = searchParams.get('category')
+    const searchParam = searchParams.get('search')
+    
+    if (categoryParam) {
+      setSelectedCategories([categoryParam])
+    }
+    if (searchParam) {
+      setSearchQuery(searchParam)
+    }
+    isInitialized.current = true
+  }, [searchParams])
+
+  // Sync state changes back to URL search parameters
+  useEffect(() => {
+    if (!isInitialized.current) return
+
+    const params = new URLSearchParams()
+    if (searchQuery) params.set('search', searchQuery)
+    if (selectedCategories.length > 0) params.set('category', selectedCategories[0])
+    
+    const newQuery = params.toString() ? `?${params.toString()}` : ''
+    if (window.location.search !== newQuery) {
+      router.replace(`/events${newQuery}`, { scroll: false })
+    }
+  }, [searchQuery, selectedCategories, router])
 
   // Data state
   const { data: session } = useSession()
@@ -97,7 +129,7 @@ export default function EventsPage() {
 
   const toggleCategory = (slug: string) => {
     setSelectedCategories(prev =>
-      prev.includes(slug) ? prev.filter(s => s !== slug) : [...prev, slug]
+      prev.includes(slug) ? [] : [slug]
     )
   }
 
@@ -292,5 +324,18 @@ export default function EventsPage() {
         </Button>
       </div>
     </div>
+  )
+}
+
+export default function EventsPage() {
+  return (
+    <Suspense fallback={
+      <div className="container py-20 text-center flex flex-col items-center justify-center">
+        <Loader2 className="h-10 w-10 animate-spin text-purple-600 mb-4" />
+        <p className="text-muted-foreground text-sm font-semibold">Loading events...</p>
+      </div>
+    }>
+      <EventsPageContent />
+    </Suspense>
   )
 }
