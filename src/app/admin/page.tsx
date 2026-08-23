@@ -346,11 +346,11 @@ export default function AdminPage() {
             return (
               <Card
                 key={event.id}
-                className="rounded-[2rem] border-2 border-purple-500/15 shadow-xl bg-card overflow-hidden transition-all duration-300 hover:shadow-2xl hover:border-purple-500/40 group"
+                className="rounded-[2rem] border-2 border-purple-500/15 shadow-xl bg-card overflow-hidden transition-all duration-300 hover:shadow-2xl hover:border-purple-500/40 group p-0 !py-0 !gap-0"
               >
                 <div className="flex flex-col lg:flex-row items-stretch">
                   {/* Event Thumbnail Preview Image */}
-                  <div className="relative w-full lg:w-72 h-48 lg:h-auto shrink-0 bg-muted/80 overflow-hidden">
+                  <div className="relative w-full lg:w-72 h-48 lg:h-auto shrink-0 bg-muted/80 overflow-hidden lg:rounded-l-[1.85rem] rounded-t-[1.85rem] lg:rounded-tr-none">
                     {event.imageUrl ? (
                       <Image
                         src={event.imageUrl}

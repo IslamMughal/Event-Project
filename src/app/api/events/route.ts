@@ -194,25 +194,70 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Auto-generate slug from title, ensure uniqueness
+    const { prisma } = await import('@/lib/db');
     const { slugify } = await import('@/lib/utils');
+    const organizerId = parseInt((session.user as any).id);
+
+    // Auto-generate slug from title, ensure uniqueness in local Prisma DB
     let baseSlug = slugify(title);
     let slug = baseSlug;
     let counter = 2;
 
-    // Check slug uniqueness in Strapi
     while (true) {
-      const checkRes = await fetchStrapi(`events?filters[slug][$eq]=${slug}`);
-      if (!checkRes.data || checkRes.data.length === 0) break;
+      const existing = await prisma.event.findUnique({ where: { slug } });
+      if (!existing) break;
       slug = `${baseSlug}-${counter}`;
       counter++;
     }
 
-    // Post to Strapi
-    const organizerId = parseInt((session.user as any).id);
-    const strapiRes = await fetchStrapi('events', {
-      method: 'POST',
-      body: JSON.stringify({
+    let createdEvent = null;
+
+    // Try posting to Strapi first
+    try {
+      const strapiRes = await fetchStrapi('events', {
+        method: 'POST',
+        body: JSON.stringify({
+          data: {
+            title,
+            slug,
+            description,
+            date,
+            time,
+            venueAddress,
+            coordinatesLat: coordinatesLat ? parseFloat(coordinatesLat) : undefined,
+            coordinatesLng: coordinatesLng ? parseFloat(coordinatesLng) : undefined,
+            ticketPrice: ticketPrice ? parseFloat(ticketPrice) : 0,
+            featured: featured || false,
+            imageUrl,
+            category: categoryId ? parseInt(categoryId) : null,
+            organizerId,
+            status: 'DRAFT',
+          }
+        })
+      });
+
+      if (strapiRes && strapiRes.data) {
+        createdEvent = {
+          id: strapiRes.data.id,
+          documentId: strapiRes.data.documentId,
+          title: strapiRes.data.title,
+          slug: strapiRes.data.slug,
+          description: strapiRes.data.description,
+          date: strapiRes.data.date,
+          time: strapiRes.data.time,
+          venueAddress: strapiRes.data.venueAddress,
+          ticketPrice: strapiRes.data.ticketPrice,
+          imageUrl: strapiRes.data.imageUrl,
+          status: strapiRes.data.status,
+        };
+      }
+    } catch (strapiError) {
+      console.warn('Strapi event creation failed, falling back to Prisma:', strapiError);
+    }
+
+    // Fallback directly to Prisma database
+    if (!createdEvent) {
+      const prismaRes = await prisma.event.create({
         data: {
           title,
           slug,
@@ -220,35 +265,31 @@ export async function POST(req: NextRequest) {
           date,
           time,
           venueAddress,
-          coordinatesLat: coordinatesLat ? parseFloat(coordinatesLat) : undefined,
-          coordinatesLng: coordinatesLng ? parseFloat(coordinatesLng) : undefined,
+          coordinatesLat: coordinatesLat ? parseFloat(coordinatesLat) : null,
+          coordinatesLng: coordinatesLng ? parseFloat(coordinatesLng) : null,
           ticketPrice: ticketPrice ? parseFloat(ticketPrice) : 0,
           featured: featured || false,
           imageUrl,
-          category: categoryId ? parseInt(categoryId) : null,
+          categoryId: categoryId ? parseInt(categoryId) : 1, // Fallback to category 1
           organizerId,
-          status: 'DRAFT',
+          status: 'PENDING',
         }
-      })
-    });
+      });
 
-    if (!strapiRes.data) {
-      throw new Error(strapiRes.error?.message || 'Failed to create event in Strapi');
+      createdEvent = {
+        id: prismaRes.id,
+        documentId: null,
+        title: prismaRes.title,
+        slug: prismaRes.slug,
+        description: prismaRes.description,
+        date: prismaRes.date,
+        time: prismaRes.time,
+        venueAddress: prismaRes.venueAddress,
+        ticketPrice: prismaRes.ticketPrice,
+        imageUrl: prismaRes.imageUrl,
+        status: prismaRes.status,
+      };
     }
-
-    const createdEvent = {
-      id: strapiRes.data.id,
-      documentId: strapiRes.data.documentId,
-      title: strapiRes.data.title,
-      slug: strapiRes.data.slug,
-      description: strapiRes.data.description,
-      date: strapiRes.data.date,
-      time: strapiRes.data.time,
-      venueAddress: strapiRes.data.venueAddress,
-      ticketPrice: strapiRes.data.ticketPrice,
-      imageUrl: strapiRes.data.imageUrl,
-      status: strapiRes.data.status,
-    };
 
     return NextResponse.json({ data: createdEvent });
   } catch (error: any) {

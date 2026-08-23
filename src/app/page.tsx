@@ -85,7 +85,7 @@ export default async function Home() {
           />
           {/* Dark Gradient Overlay for optimal contrast */}
           <div className="absolute inset-0 bg-gradient-to-b from-slate-950/85 via-slate-950/75 to-slate-950/95 backdrop-blur-[2px]" />
-          
+
           {/* Faint Logo Watermark Overlay */}
           <div className="absolute inset-0 flex items-center justify-center opacity-15">
             <div className="relative w-[450px] h-[450px] sm:w-[600px] sm:h-[600px]">

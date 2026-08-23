@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { Calendar, MapPin, Loader2 } from 'lucide-react'
+import { Calendar, MapPin, Loader2, Clock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
@@ -53,18 +53,34 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {rsvps.map((rsvp) => (
             <Card key={rsvp.id} className="overflow-hidden border-none bg-card shadow-xl hover:shadow-2xl transition-all group rounded-2xl">
-              <div className="h-2 w-full bg-primary" />
+              <div className="h-2 w-full bg-purple-600" />
               <CardHeader className="pb-2">
-                <CardTitle className="text-xl group-hover:text-primary transition-colors">
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  {rsvp.event?.category && (
+                    <span className="text-[10px] font-black tracking-wider uppercase text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-950/70 px-2.5 py-0.5 rounded-md border border-purple-200 dark:border-purple-800">
+                      {rsvp.event.category.name}
+                    </span>
+                  )}
+                  <span className="font-black text-xs text-rose-500">
+                    {rsvp.event?.ticketPrice === 0 || rsvp.event?.ticketPrice === null ? 'FREE' : `$${rsvp.event?.ticketPrice}`}
+                  </span>
+                </div>
+                <CardTitle className="text-xl group-hover:text-purple-600 transition-colors">
                   {rsvp.event?.title || 'Untitled Event'}
                 </CardTitle>
-                <CardDescription className="flex items-center gap-2">
-                  <Calendar className="h-3 w-3" /> {rsvp.event?.date || 'Date TBD'}
+                <CardDescription className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5">
+                  <span className="flex items-center gap-1.5">
+                    <Calendar className="h-3.5 w-3.5 text-purple-500" /> {rsvp.event?.date || 'Date TBD'}
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <Clock className="h-3.5 w-3.5 text-cyan-500" /> {rsvp.event?.time || 'Time TBD'}
+                  </span>
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <MapPin className="h-4 w-4 text-primary" /> {rsvp.event?.venueAddress || 'Venue TBD'}
+                <div className="flex items-start gap-2 text-sm text-muted-foreground">
+                  <MapPin className="h-4 w-4 text-rose-500 shrink-0 mt-0.5" /> 
+                  <span className="line-clamp-2">{rsvp.event?.venueAddress || 'Venue TBD'}</span>
                 </div>
                 <div className="flex gap-3 pt-2">
                   <Link href={`/events/${rsvp.event?.slug || ''}`}>

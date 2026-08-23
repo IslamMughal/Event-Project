@@ -256,8 +256,8 @@ const Navbar = () => {
                   <Menu className="h-5 w-5 text-purple-600" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="border-purple-200 dark:border-purple-900 w-80">
-                <div className="flex flex-col gap-5 mt-8">
+              <SheetContent side="right" className="border-purple-200 dark:border-purple-900 w-80 p-6 bg-white dark:bg-slate-950">
+                <div className="flex flex-col gap-5 mt-6">
                   <div className="flex items-center space-x-3 mb-4">
                     <div className="relative h-12 w-12 rounded-full overflow-hidden bg-white border-2 border-purple-500/40 shadow-md flex items-center justify-center shrink-0">
                       <Image src="/logo.png" alt="Logo" fill className="object-contain p-0.5" unoptimized />

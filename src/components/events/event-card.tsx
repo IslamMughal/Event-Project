@@ -74,9 +74,9 @@ const EventCard = ({ event, isHovered, onHover, initialFavoriteId = null, onFavo
   const ticketPrice = event.ticketPrice ?? event.ticket_price ?? 0;
 
   return (
-    <Card 
+    <Card
       className={cn(
-        "overflow-hidden transition-all duration-300 border border-purple-500/20 hover:border-purple-500/60 hover:shadow-2xl hover:shadow-purple-500/20 group flex flex-col h-full bg-card rounded-2xl",
+        "overflow-hidden transition-all duration-300 border border-purple-500/20 hover:border-purple-500/60 hover:shadow-2xl hover:shadow-purple-500/20 group flex flex-col h-full bg-card rounded-2xl p-0 !py-0 !gap-0 min-h-[460px] sm:min-h-[520px] md:min-h-[550px]",
         isHovered && "border-purple-600 shadow-2xl shadow-purple-500/25 scale-[1.02]"
       )}
       onMouseEnter={() => onHover?.(String(event.id))}
@@ -84,7 +84,7 @@ const EventCard = ({ event, isHovered, onHover, initialFavoriteId = null, onFavo
     >
       <Link href={`/events/${event.slug}`} className="flex flex-col h-full">
         {/* Banner Image Container */}
-        <div className="relative aspect-[16/10] w-full overflow-hidden bg-purple-50 dark:bg-purple-950/40">
+        <div className="relative aspect-[1.1] w-full overflow-hidden bg-purple-50 dark:bg-purple-950/40">
           {(event.imageUrl || event.image) ? (
             <Image
               src={event.imageUrl || event.image?.url || ''}
@@ -98,7 +98,7 @@ const EventCard = ({ event, isHovered, onHover, initialFavoriteId = null, onFavo
               <Calendar className="h-10 w-10 text-purple-600" />
             </div>
           )}
-          
+
           <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
           {event.featured && (
@@ -107,8 +107,8 @@ const EventCard = ({ event, isHovered, onHover, initialFavoriteId = null, onFavo
             </Badge>
           )}
 
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             size="icon"
             onClick={handleFavoriteClick}
             className={cn(
