@@ -2,12 +2,12 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Calendar, Mail, Lock, AlertCircle, Eye, EyeOff } from 'lucide-react'
+import { Mail, Lock, AlertCircle, Eye, EyeOff, Sparkles, ArrowRight } from 'lucide-react'
 
 export default function SignInPage() {
   const [email, setEmail] = useState('')
@@ -38,89 +38,154 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="w-full flex-grow flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8 min-h-[calc(100vh-140px)] relative overflow-hidden bg-neutral-50/20 dark:bg-neutral-950/10">
-      {/* Ambient backgrounds */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-neutral-200/20 dark:bg-neutral-800/10 blur-[80px] pointer-events-none" />
-      <div className="absolute top-12 right-12 w-[200px] h-[200px] rounded-full bg-neutral-300/10 dark:bg-neutral-700/5 blur-[50px] pointer-events-none" />
+    <div className="w-full flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 min-h-[calc(100vh-140px)] relative overflow-hidden">
+      {/* Background Image with Overlay */}
+      <div className="absolute inset-0 z-0">
+        <Image
+          src="/images/auth-bg.jpg"
+          alt="Event background"
+          fill
+          priority
+          className="object-cover object-center brightness-[0.35] dark:brightness-[0.25]"
+          unoptimized
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/50" />
+      </div>
 
-      <Card className="w-full max-w-md shadow-3xl border border-neutral-200/50 dark:border-neutral-800/60 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl relative z-10 rounded-2xl transition-all duration-300">
-        <CardHeader className="space-y-2 text-center pb-8 pt-8">
-          <div className="flex justify-center mb-2">
-            <div className="h-14 w-14 rounded-2xl bg-neutral-950 text-white dark:bg-white dark:text-neutral-950 flex items-center justify-center shadow-lg shadow-neutral-200 dark:shadow-neutral-950 transition-transform hover:scale-105 duration-300">
-              <Calendar className="h-6 w-6" />
+      <div className="w-full max-w-md relative z-10">
+        {/* Logo and Brand Header */}
+        <div className="text-center mb-8 animate-in fade-in slide-in-from-top-4 duration-700">
+          <Link href="/" className="inline-flex flex-col items-center gap-4 group">
+            <div className="relative h-24 w-24 sm:h-28 sm:w-28 rounded-full overflow-hidden bg-white border-4 border-purple-500/40 shadow-2xl shadow-purple-500/30 transition-all duration-300 group-hover:scale-105 group-hover:border-purple-500/80 flex items-center justify-center">
+              <Image
+                src="/logo.png"
+                alt="Eventify Logo"
+                fill
+                className="object-contain p-2"
+                unoptimized
+              />
             </div>
+            <div className="relative h-12 w-80 sm:h-14 sm:w-96 drop-shadow-[0_4px_12px_rgba(168,85,247,0.5)]">
+              {/* Always use logo-text-light.png on the dark background image for high visibility */}
+              <Image
+                src="/logo-text-light.png"
+                alt="Eventify"
+                fill
+                className="object-contain"
+                unoptimized
+              />
+            </div>
+          </Link>
+        </div>
+
+        {/* Sign-in Card */}
+        <div className="bg-white/70 dark:bg-slate-900/70 backdrop-blur-2xl rounded-3xl border border-purple-200/50 dark:border-purple-800/40 shadow-2xl shadow-purple-500/10 dark:shadow-purple-900/20 overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-700 [animation-delay:150ms]">
+          {/* Card Header */}
+          <div className="px-8 pt-8 pb-2 text-center">
+            <div className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-purple-600 dark:text-purple-400 mb-3">
+              <Sparkles className="h-3 w-3" /> Welcome Back
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+              Sign in to your account
+            </h1>
+            <p className="text-sm text-muted-foreground mt-1.5 font-medium">
+              Discover, engage, and connect with events near you
+            </p>
           </div>
-          <CardTitle className="text-3xl font-extrabold tracking-tight text-neutral-900 dark:text-white">Welcome Back</CardTitle>
-          <CardDescription className="text-sm text-neutral-500 dark:text-neutral-400 font-medium">
-            Enter your credentials to access your account
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="px-8 pb-8">
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {error && (
-              <div className="bg-destructive/10 text-destructive text-sm p-3.5 rounded-xl flex items-center gap-2.5 border border-destructive/20 animate-in fade-in slide-in-from-top-1 duration-200">
-                <AlertCircle className="h-4 w-4 shrink-0" />
-                <span className="font-semibold">{error}</span>
-              </div>
-            )}
-            <div className="space-y-4">
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500">Email Address</label>
-                <div className="relative">
-                  <Mail className="absolute left-3.5 top-3.5 h-4.5 w-4.5 text-neutral-400 pointer-events-none" />
-                  <Input
-                    type="email"
-                    placeholder="name@example.com"
-                    className="pl-11 h-12 rounded-xl border-neutral-200 dark:border-neutral-800 focus-visible:ring-1 focus-visible:ring-black dark:focus-visible:ring-white bg-neutral-50/50 dark:bg-neutral-950/20 font-medium transition-all"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
+
+          {/* Card Body */}
+          <div className="px-8 py-6">
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {error && (
+                <div className="bg-rose-500/10 text-rose-600 dark:text-rose-400 text-sm p-3.5 rounded-xl flex items-center gap-2.5 border border-rose-500/20 animate-in fade-in slide-in-from-top-1 duration-200">
+                  <AlertCircle className="h-4 w-4 shrink-0" />
+                  <span className="font-semibold">{error}</span>
                 </div>
-              </div>
+              )}
               
-              <div className="space-y-1.5">
-                <div className="flex justify-between items-center">
-                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500">Password</label>
+              <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-black uppercase tracking-wider text-purple-600/70 dark:text-purple-400/70">
+                    Email Address
+                  </label>
+                  <div className="relative">
+                    <Mail className="absolute left-3.5 top-3.5 h-4.5 w-4.5 text-purple-400 pointer-events-none" />
+                    <Input
+                      type="email"
+                      placeholder="name@example.com"
+                      className="pl-11 h-12 rounded-xl border-purple-200 dark:border-purple-900/60 focus-visible:ring-2 focus-visible:ring-purple-600 dark:focus-visible:ring-purple-500 bg-purple-50/30 dark:bg-purple-950/20 font-medium transition-all"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                  </div>
                 </div>
-                <div className="relative">
-                  <Lock className="absolute left-3.5 top-3.5 h-4.5 w-4.5 text-neutral-400 pointer-events-none" />
-                  <Input
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="••••••••"
-                    className="pl-11 pr-11 h-12 rounded-xl border-neutral-200 dark:border-neutral-800 focus-visible:ring-1 focus-visible:ring-black dark:focus-visible:ring-white bg-neutral-50/50 dark:bg-neutral-950/20 font-medium transition-all"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-3.5 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 focus:outline-none transition-colors"
-                    title={showPassword ? 'Hide password' : 'Show password'}
-                  >
-                    {showPassword ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
-                  </button>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-black uppercase tracking-wider text-purple-600/70 dark:text-purple-400/70">
+                    Password
+                  </label>
+                  <div className="relative">
+                    <Lock className="absolute left-3.5 top-3.5 h-4.5 w-4.5 text-purple-400 pointer-events-none" />
+                    <Input
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="••••••••"
+                      className="pl-11 pr-11 h-12 rounded-xl border-purple-200 dark:border-purple-900/60 focus-visible:ring-2 focus-visible:ring-purple-600 dark:focus-visible:ring-purple-500 bg-purple-50/30 dark:bg-purple-950/20 font-medium transition-all"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3.5 top-3.5 text-purple-300 hover:text-purple-600 dark:hover:text-purple-300 focus:outline-none transition-colors"
+                      title={showPassword ? 'Hide password' : 'Show password'}
+                    >
+                      {showPassword ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-            
-            <Button className="w-full h-12 font-extrabold rounded-xl bg-black text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-100 shadow-md transition-all active:scale-[0.99] duration-150 uppercase tracking-wider text-xs" type="submit" disabled={loading}>
-              {loading ? 'Signing in...' : 'Sign In'}
-            </Button>
-          </form>
-        </CardContent>
-        <CardFooter className="flex flex-col gap-4 text-center border-t border-neutral-100 dark:border-neutral-800/60 py-6 bg-neutral-50/30 dark:bg-neutral-950/10 rounded-b-2xl">
-          <div className="text-sm font-semibold text-neutral-500 dark:text-neutral-450">
-            Don't have an account?{' '}
-            <Link href="/auth/signup">
-              <Button variant="link" className="p-0 h-auto text-black dark:text-white hover:text-neutral-700 dark:hover:text-neutral-300 font-bold transition-colors">
-                Sign up
+
+              <Button
+                className="w-full h-12 font-black rounded-xl bg-purple-700 hover:bg-purple-800 text-white shadow-lg shadow-purple-700/30 hover:shadow-purple-800/40 transition-all active:scale-[0.99] duration-200 uppercase tracking-wider text-xs flex items-center justify-center gap-2"
+                type="submit"
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Signing in...
+                  </>
+                ) : (
+                  <>
+                    Sign In
+                    <ArrowRight className="h-4 w-4" />
+                  </>
+                )}
               </Button>
-            </Link>
+            </form>
           </div>
-        </CardFooter>
-      </Card>
+
+          {/* Card Footer */}
+          <div className="px-8 py-5 text-center border-t border-purple-100 dark:border-purple-900/40 bg-purple-50/30 dark:bg-purple-950/10">
+            <p className="text-sm font-semibold text-muted-foreground">
+              Don&apos;t have an account?{' '}
+              <Link
+                href="/auth/signup"
+                className="text-purple-600 dark:text-purple-400 font-black hover:text-purple-700 dark:hover:text-purple-300 transition-colors hover:underline underline-offset-2"
+              >
+                Sign up
+              </Link>
+            </p>
+          </div>
+        </div>
+
+        {/* Bottom tagline */}
+        <p className="text-center text-[11px] font-medium text-muted-foreground/60 mt-6 animate-in fade-in duration-700 [animation-delay:300ms]">
+          Discover | Engage | Connect
+        </p>
+      </div>
     </div>
   )
 }
