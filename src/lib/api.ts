@@ -26,6 +26,11 @@ async function apiFetch<T>(url: string, options?: RequestInit): Promise<T> {
     throw new Error(message);
   }
 
+  // 204 No Content — nothing to parse
+  if (res.status === 204) {
+    return undefined as unknown as T;
+  }
+
   return res.json() as Promise<T>;
 }
 

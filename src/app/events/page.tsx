@@ -5,12 +5,13 @@ import { Event, Category, Favorite } from '@/types'
 import EventCard from '@/components/events/event-card'
 import EventMap from '@/components/events/event-map'
 import { Input } from '@/components/ui/input'
-import { Search, SlidersHorizontal, Map as MapIcon, List as ListIcon, Loader2, Sparkles } from 'lucide-react'
+import { Search, SlidersHorizontal, Map as MapIcon, List as ListIcon, Loader2, Sparkles, LayoutGrid } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { getEvents, getCategories, getMyFavorites } from '@/lib/api'
 import { useSession } from 'next-auth/react'
 import { cn } from '@/lib/utils'
+import Link from 'next/link'
 
 export default function EventsPage() {
   const [hoveredEventId, setHoveredEventId] = useState<string | null>(null)
@@ -157,6 +158,11 @@ export default function EventsPage() {
             <Button variant="outline" className="h-11 px-4 font-extrabold border-purple-300 dark:border-purple-800 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/50 rounded-xl flex items-center gap-2">
               <SlidersHorizontal className="h-4 w-4 text-purple-600" /> Filters
             </Button>
+            <Link href="/categories">
+              <Button variant="outline" className="h-11 px-4 font-extrabold border-purple-300 dark:border-purple-800 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/50 rounded-xl flex items-center gap-2">
+                <LayoutGrid className="h-4 w-4 text-purple-600" /> Browse Categories
+              </Button>
+            </Link>
           </div>
         </div>
 

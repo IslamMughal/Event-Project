@@ -11,7 +11,7 @@ import { User, Mail, Shield, Save, Camera, Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 export default function ProfilePage() {
-  const { data: session, update } = useSession()
+  const { data: session } = useSession()
   const router = useRouter()
   const [username, setUsername] = useState(session?.user?.name || '')
   const [avatarUrl, setAvatarUrl] = useState<string>((session?.user as any)?.image || session?.user?.image || '')
@@ -117,10 +117,9 @@ export default function ProfilePage() {
       setUsername(json.data.username)
       if (json.data.image) setAvatarUrl(json.data.image)
 
-      await update({ name: json.data.username, username: json.data.username, image: json.data.image })
-      router.refresh()
       setSaveMessage('Profile saved successfully!')
-      setTimeout(() => setSaveMessage(''), 3000)
+      // Full reload — the JWT callback now reads fresh data from DB
+      setTimeout(() => window.location.reload(), 500)
     } catch (err: any) {
       setSaveMessage(err.message || 'Save failed.')
     } finally {
@@ -175,7 +174,7 @@ export default function ProfilePage() {
               )}
 
               <div className="pt-4 flex justify-end">
-                <Button className="rounded-xl h-12 px-8 font-bold gap-2" disabled={saving || uploading}>
+                <Button type="submit" className="rounded-xl h-12 px-8 font-bold gap-2" disabled={saving || uploading}>
                   {saving ? (
                     <><Loader2 className="h-4 w-4 animate-spin" /> Saving...</>
                   ) : (

@@ -97,6 +97,15 @@ export default function EventDetailPage() {
         const json = await res.json()
         if (res.ok && json.data) {
           setFavoriteId(json.data.id)
+        } else if (res.status === 409) {
+          // Already favorited — state was out of sync, so unfavorite instead
+          const favRes = await fetch('/api/favorites/my')
+          const favJson = await favRes.json()
+          const existing = favJson?.data?.find((f: any) => f.eventId === event.id)
+          if (existing) {
+            await fetch(`/api/favorites/${existing.id}`, { method: 'DELETE' })
+            setFavoriteId(null)
+          }
         }
       }
     } catch (err) {

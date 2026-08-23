@@ -11,7 +11,7 @@ import { Event } from '@/types'
 import { cn } from '@/lib/utils'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { createFavorite, deleteFavorite } from '@/lib/api'
+import { createFavorite, deleteFavorite, getMyFavorites } from '@/lib/api'
 
 interface EventCardProps {
   event: Event
@@ -47,9 +47,24 @@ const EventCard = ({ event, isHovered, onHover, initialFavoriteId = null, onFavo
         setFavoriteId(null)
         onFavoriteToggle?.(event.id, null)
       } else {
-        const res = await createFavorite(event.id)
-        setFavoriteId(res.data.id)
-        onFavoriteToggle?.(event.id, res.data.id)
+        try {
+          const res = await createFavorite(event.id)
+          setFavoriteId(res.data.id)
+          onFavoriteToggle?.(event.id, res.data.id)
+        } catch (createErr: any) {
+          // Handle 409 "Already favorited" — state was out of sync, so unfavorite instead
+          if (createErr?.message?.includes('Already favorited')) {
+            const favRes = await getMyFavorites()
+            const existing = favRes.data.find((f) => f.eventId === event.id)
+            if (existing) {
+              await deleteFavorite(existing.id)
+              setFavoriteId(null)
+              onFavoriteToggle?.(event.id, null)
+            }
+          } else {
+            throw createErr
+          }
+        }
       }
     } catch (err) {
       console.error('Error toggling favorite:', err)

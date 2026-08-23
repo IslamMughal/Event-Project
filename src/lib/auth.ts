@@ -33,7 +33,7 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user, trigger, session }) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
         token.role = (user as any).role as UserRole;
@@ -42,16 +42,27 @@ export const authOptions: NextAuthOptions = {
         token.picture = (user as any).image ?? null;
         token.image = (user as any).image ?? null;
       }
-      if (trigger === 'update' && session) {
-        if (session.name) {
-          token.name = session.name;
-          token.username = session.name;
-        }
-        if (session.image !== undefined) {
-          token.image = session.image;
-          token.picture = session.image;
+
+      // Always refresh from database so profile changes (name, image, role)
+      // are reflected across all components on every page load
+      if (token.id) {
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { id: parseInt(token.id as string) },
+            select: { username: true, image: true, role: true },
+          });
+          if (dbUser) {
+            token.name = dbUser.username;
+            token.username = dbUser.username;
+            token.image = (dbUser as any).image ?? null;
+            token.picture = (dbUser as any).image ?? null;
+            token.role = dbUser.role as UserRole;
+          }
+        } catch {
+          // Silently ignore DB errors to avoid breaking auth
         }
       }
+
       return token;
     },
     async session({ session, token }) {
